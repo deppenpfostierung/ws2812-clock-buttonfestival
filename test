@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#basically copied from commander's main.py in this directory by Uruk
+#(to Hochkomma or not to Hochkomma that's the question)
+
+CLOCK_IP="192.168.84.49"
+
+declare -A texts
+texts[0]="yolo"
+texts[1]="oida"
+texts[2]="test"
+texts[3]="1337"
+
+
+longtext="Das WLANPasswort ist 1234"
+len=$(echo $longtext | wc -c)
+#add some padding spaces
+longtext="    "$longtext"    "
+#echo $len
+
+trap "curl -sS 'http://'${CLOCK_IP}'/api/v1/set?overrideDigits='" EXIT
+
+
+i=0;
+
+while true; do
+
+	curstr="${longtext:i:4}"
+
+	#echo "$curstr"
+	curstr=$(echo "$curstr" | sed 's/\ /%20/g')
+	#echo "$curstr"
+
+	#curl -sS 'http://'${CLOCK_IP}'/api/v1/set?overrideDigits='${texts[$i]} >/dev/null
+	curl -sS 'http://'${CLOCK_IP}'/api/v1/set?overrideDigits='"${curstr}" > /dev/null
+	#echo
+	sleep 0.5
+	((i++))
+	if [ $i -gt $((len-1+4)) ]; then
+		i=0
+	fi
+done
+
+
+
+
+
