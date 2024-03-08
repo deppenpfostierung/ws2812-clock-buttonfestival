@@ -12,7 +12,8 @@ texts[2]="test"
 texts[3]="1337"
 
 
-longtext="Das WLANPasswort ist 1234"
+# longtext="das passwort ist sicher nicht 1234"
+longtext="CYBER"
 len=$(echo $longtext | wc -c)
 #add some padding spaces
 longtext="    "$longtext"    "
@@ -32,16 +33,24 @@ while true; do
 	#echo "$curstr"
 
 	#curl -sS 'http://'${CLOCK_IP}'/api/v1/set?overrideDigits='${texts[$i]} >/dev/null
-	curl -sS 'http://'${CLOCK_IP}'/api/v1/set?overrideDigits='"${curstr}" > /dev/null
-	#echo
-	sleep 0.5
+        before=$(date +%s%N)
+	curl -sS 'http://'${CLOCK_IP}'/api/v1/set?overrideDigits='"${curstr}" >/dev/null
+	after=$(date +%s%N)
+	echo "Diff=$((after-before))"
+	interval=0.5
+	sleep_for=$(calc "$interval - ($after-$before) / 1000000000")
+	sleep_for="$(echo $sleep_for | tr -d '\t')"
+	#echo ${sleep_for:0:1}
+
+	if [ "${sleep_for:0:1}" = "-" ]; then
+		sleep_for=0
+	fi
+
+        echo "Sleep: $sleep_for"
+
+	sleep $sleep_for
 	((i++))
 	if [ $i -gt $((len-1+4)) ]; then
 		i=0
 	fi
 done
-
-
-
-
-
